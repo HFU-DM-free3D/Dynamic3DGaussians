@@ -11,12 +11,16 @@ from helpers import setup_camera, l1_loss_v1, l1_loss_v2, weighted_l2_loss_v1, w
     o3d_knn, params2rendervar, params2cpu, save_params
 from external import calc_ssim, calc_psnr, build_rotation, densify, update_params_and_optimizer
 
+white_list = [1, 20, 11]
 
 def get_dataset(t, md, seq):
     dataset = []
     for c in range(len(md['fn'][t])):
         w, h, k, w2c = md['w'], md['h'], md['k'][t][c], md['w2c'][t][c]
         cam = setup_camera(w, h, k, w2c, near=1.0, far=100)
+        if c not in white_list:
+            continue
+        print(c)
         fn = md['fn'][t][c]
         im = np.array(copy.deepcopy(Image.open(f"./data/{seq}/ims/{fn}")))
         im = torch.tensor(im).float().cuda().permute(2, 0, 1) / 255
