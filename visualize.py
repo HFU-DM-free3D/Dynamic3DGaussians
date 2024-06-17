@@ -26,7 +26,7 @@ FORCE_LOOP = False  # False or True
 w, h = 640, 360
 near, far = 0.01, 100.0
 view_scale = 3.9
-fps = 20
+fps = 1
 traj_frac = 25  # 4% of points
 traj_length = 15
 def_pix = torch.tensor(
@@ -233,6 +233,6 @@ def visualize(seq, exp):
 
 
 if __name__ == "__main__":
-    exp_name = "dataReduction"
-    for sequence in ["basketball"]:
+    exp_name = "atlfb"
+    for sequence in ["hfu-dyn3d-data"]:
         visualize(sequence, exp_name)

@@ -10,24 +10,13 @@ from diff_gaussian_rasterization import GaussianRasterizer as Renderer
 from helpers import setup_camera, l1_loss_v1, l1_loss_v2, weighted_l2_loss_v1, weighted_l2_loss_v2, quat_mult, \
     o3d_knn, params2rendervar, params2cpu, save_params
 from external import calc_ssim, calc_psnr, build_rotation, densify, update_params_and_optimizer
-import argparse
 
-
-# white_list = [1, 20, 11]
 
 def get_dataset(t, md, seq):
     dataset = []
     for c in range(len(md['fn'][t])):
         w, h, k, w2c = md['w'], md['h'], md['k'][t][c], md['w2c'][t][c]
         cam = setup_camera(w, h, k, w2c, near=1.0, far=100)
-
-
-
-        # if c not in white_list:
-        #     continue
-
-        # print(c)
-        
         fn = md['fn'][t][c]
         im = np.array(copy.deepcopy(Image.open(f"./data/{seq}/ims/{fn}")))
         im = torch.tensor(im).float().cuda().permute(2, 0, 1) / 255
@@ -35,10 +24,6 @@ def get_dataset(t, md, seq):
         seg = torch.tensor(seg).float().cuda()
         seg_col = torch.stack((seg, torch.zeros_like(seg), 1 - seg))
         dataset.append({'cam': cam, 'im': im, 'seg': seg_col, 'id': c})
-
-    
-    # print(dataset)
-
     return dataset
 
 
@@ -50,7 +35,6 @@ def get_batch(todo_dataset, dataset):
 
 
 def initialize_params(seq, md):
-    print("./data/"+seq +"/init_pt_cld.npz")
     init_pt_cld = np.load(f"./data/{seq}/init_pt_cld.npz")["data"]
     seg = init_pt_cld[:, 6]
     max_cams = 50
@@ -205,8 +189,7 @@ def train(seq, exp):
         print(f"Experiment '{exp}' for sequence '{seq}' already exists. Exiting.")
         return
     md = json.load(open(f"./data/{seq}/train_meta.json", 'r'))  # metadata
-    # num_timesteps = len(md['fn'])
-    num_timesteps = 10
+    num_timesteps = len(md['fn'])
     params, variables = initialize_params(seq, md)
     optimizer = initialize_optimizer(params, variables)
     output_params = []
