@@ -2,3 +2,7 @@ __pycache__/
 .idea/
 data/
 output/
+data.zip
+output.zip
+DepthCamera*
+DepthCapture*
